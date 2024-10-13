@@ -15,7 +15,7 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, bool>
 
     public async Task<bool> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await _context.Users.FindAsync(request.Id);
+        var user = await _context.Users.FindAsync(request.UserId);
 
         if (user == null) return false;
 

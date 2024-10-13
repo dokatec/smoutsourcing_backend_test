@@ -60,8 +60,14 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserById(int id)
         {
-            var user = await _mediator.Send(new DeleteUserCommand());
-            return Ok(user);
+            var user = await _mediator.Send(new DeleteUserCommand { UserId = id });
+
+            if (!user)
+            {
+                return NotFound("ID do usuario não encontrado!");
+            }
+
+            return Ok("Cadastro do usuario apagado!");
         }
 
 
