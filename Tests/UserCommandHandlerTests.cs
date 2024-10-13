@@ -1,15 +1,13 @@
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Backend.Commands;
 using Backend.Data;
 using Backend.Handlers;
-using Backend.Models;
-using Xunit;
+
 
 public class UserCommandHandlerTests
 {
-    private readonly UserCommandHandler _handler;
+    private readonly UserCommandHandler _createHandler;
+    private readonly UpdateUserCommandHandler _updateHandler;
     private readonly UserDbContext _context;
 
     public UserCommandHandlerTests()
@@ -18,17 +16,47 @@ public class UserCommandHandlerTests
             .UseInMemoryDatabase(databaseName: "TestDatabase")
             .Options;
         _context = new UserDbContext(options);
-        _handler = new UserCommandHandler(_context);
+        _createHandler = new UserCommandHandler(_context);
+        _updateHandler = new UpdateUserCommandHandler(_context);
+
+        // Clear the database before each test
+        _context.Database.EnsureDeleted();
+        _context.Database.EnsureCreated();
     }
 
     [Fact]
     public async Task Handle_CreateUserCommand_ShouldAddUser()
     {
-        var command = new CreateUserCommand { Name = "John", Email = "john@example.com" };
-        var result = await _handler.Handle(command, CancellationToken.None);
+        // Arrange
+        var command = new CreateUserCommand { Name = "Jhonatan", Email = "jhonatan.tec@gmail.com" };
 
+        // Act
+        var result = await _createHandler.Handle(command, CancellationToken.None);
+
+        // Assert
         var user = await _context.Users.FindAsync(result.Id);
         Assert.NotNull(user);
-        Assert.Equal("John", user.Name);
+        Assert.Equal("Jhonatan", user.Name);
+        Assert.Equal("jhonatan.tec@gmail.com", user.Email);
+    }
+
+    [Fact]
+    public async Task Handle_UpdateUserCommand_ShouldUpdateUser()
+    {
+        // Arrange
+        var createCommand = new CreateUserCommand { Name = "Jhonatan", Email = "jhonatan.tec@gmail.com" };
+        var createdUser = await _createHandler.Handle(createCommand, CancellationToken.None);
+
+        var updateCommand = new UpdateUserCommand { UserId = createdUser.Id, Name = "Brayan", Email = "brayan@gmail.com" };
+
+        // Act
+        var updateResult = await _updateHandler.Handle(updateCommand, CancellationToken.None);
+
+        // Assert
+        Assert.True(updateResult);
+        var updatedUser = await _context.Users.FindAsync(createdUser.Id);
+        Assert.NotNull(updatedUser);
+        Assert.Equal("Brayan", updatedUser.Name);
+        Assert.Equal("brayan@gmail.com", updatedUser.Email);
     }
 }
