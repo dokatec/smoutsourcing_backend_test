@@ -1,11 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 
-namespace Backend.Context;
+namespace Backend.Data;
 
 public class UserDbContext : DbContext
 {
     public UserDbContext(DbContextOptions<UserDbContext> options) : base(options) { }
-    public DbSet<User> Users => Set<User>();
+    public DbSet<User> Users { get; set; }
+
+    protected UserDbContext() { }
 
 }

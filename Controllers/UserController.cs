@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Backend.Models;
-using Backend.Context;
+using MediatR;
+using Backend.Commands;
+using Backend.Queries;
 
 namespace Backend.Controllers
 {
@@ -14,66 +9,26 @@ namespace Backend.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly UserDbContext _context;
+        private readonly IMediator _mediator;
 
-        public UserController(UserDbContext context)
+        public UserController(IMediator mediator)
         {
-            _context = context;
+            _mediator = mediator;
         }
-
-        // GET: api/User
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers([FromServices] GetUsersQueryHandler handler)
-        {
-            var query = new GetUsersQuery();
-            var users = await handler.Handle(query);
-            return Ok(users);
-        }
-
-        // GET: api/User/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id, [FromServices] GetUserQueryHandler handler)
-        {
-            var query = new GetUserQuery { Id = id };
-            var user = await handler.Handle(query);
-            if (user == null) return NotFound();
-            return user;
-        }
-
-        // PUT: api/User/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUSer(int id, UpdateUserCommand command, [FromServices] UpdateUserCommandHandler handler)
-        {
-            if (id != command.Id) return BadRequest();
-            await handler.Handle(command);
-            return NoContent();
-
-
-        }
-
-        // POST: api/User
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> CreateUser(CreateUserCommand command, [FromServices] CreateUserCommandHandler handler)
+        public async Task<IActionResult> CreateUser(CreateUserCommand command)
         {
-            var user = await handler.Handle(command);
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+            var user = await _mediator.Send(command);
+            return Ok(new { user.Id, user.Name, user.Email });
         }
 
-        // DELETE: api/User/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id, [FromServices] DeleteUserCommandHandler handler)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserById(int id)
         {
-            var command = new DeleteUserCommand { Id = id };
-            await handler.Handle(command);
-            return NoContent();
+            var user = await _mediator.Send(new GetUserByIdQuery(id));
+            return Ok(user);
         }
 
-        private bool UserExists(int id)
-        {
-            return _context.Users.Any(e => e.Id == id);
-        }
 
     }
 }
