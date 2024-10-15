@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using Backend.Commands;
+using Backend.Commands.LoginCommand;
 using Backend.Queries;
 using Backend.Data;
 
@@ -34,6 +35,7 @@ namespace Backend.Controllers
             }
 
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
@@ -76,6 +78,33 @@ namespace Backend.Controllers
             }
 
             return Ok("Cadastro do usuario apagado!");
+        }
+
+
+
+        [HttpPost("register")]
+        public async Task<IActionResult> CreateUserLogin([FromBody] LoginCommand command)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _mediator.Send(command);
+            return Ok(new { user.Id, user.Name, user.CPF, user.Email });
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginCommand command)
+        {
+            var token = await _mediator.Send(command);
+
+            if (token == null)
+            {
+                return Unauthorized("Invalid login attempt");
+            }
+
+            return Ok(new { Token = token });
         }
 
 
