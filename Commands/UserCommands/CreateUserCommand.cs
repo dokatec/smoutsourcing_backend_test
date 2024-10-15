@@ -2,7 +2,6 @@ using MediatR;
 using Backend.Models;
 using System.ComponentModel.DataAnnotations;
 
-
 namespace Backend.Commands;
 public class CreateUserCommand : IRequest<User>
 {

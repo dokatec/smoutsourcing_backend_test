@@ -25,5 +25,8 @@ public class LoginCommand : IRequest<LoginUser>
     [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#\\$%\\^&\\*])(?=.*[a-zA-Z]).{8,}$", ErrorMessage = "A senha deve conter no mínimo 8 caracteres, incluindo letras maiúsculas e minúsculas, números e caracteres especiais.")]
     public string? Senha { get; set; }
 
+    public string? Token { get; set; }
+
+
 
 }

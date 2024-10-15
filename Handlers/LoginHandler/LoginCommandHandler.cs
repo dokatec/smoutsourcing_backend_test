@@ -10,16 +10,16 @@ using Backend.Models;
 
 public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginUser>
 {
-    private readonly UserDbContext _context;
+    private readonly LoginDbContext _context;
 
-    public LoginCommandHandler(UserDbContext context)
+    public LoginCommandHandler(LoginDbContext context)
     {
         _context = context;
     }
 
     public async Task<LoginUser> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        var user = await _context.Users
+        var user = await _context.UserLogin
             .SingleOrDefaultAsync(u => u.Email == request.Email && u.Senha == request.Senha, cancellationToken);
 
         if (user == null)

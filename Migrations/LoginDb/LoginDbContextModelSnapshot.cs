@@ -47,6 +47,9 @@ namespace backend.Migrations.LoginDb
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<string>("Token")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.ToTable("UserLogin");

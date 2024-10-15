@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace backend.Migrations.LoginDb
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialContext : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,7 +20,8 @@ namespace backend.Migrations.LoginDb
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     CPF = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
-                    Senha = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                    Senha = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Token = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace backend.Migrations.LoginDb
 {
     [DbContext(typeof(LoginDbContext))]
-    [Migration("20241015145054_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241015225304_InitialContext")]
+    partial class InitialContext
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,6 +49,9 @@ namespace backend.Migrations.LoginDb
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
