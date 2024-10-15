@@ -21,10 +21,18 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser(CreateUserCommand command)
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserCommand command)
         {
-            var user = await _mediator.Send(command);
-            return Ok(new { user.Id, user.Name, user.Email });
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            else
+            {
+                var user = await _mediator.Send(command);
+                return Ok(new { user.Id, user.Name, user.CPF, user.Email, user.Senha });
+            }
+
         }
 
         [HttpGet("{id}")]

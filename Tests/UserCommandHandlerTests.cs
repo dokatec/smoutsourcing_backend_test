@@ -28,7 +28,7 @@ public class UserCommandHandlerTests
     public async Task Handle_CreateUserCommand_ShouldAddUser()
     {
         // Arrange
-        var command = new CreateUserCommand { Name = "Jhonatan", Email = "jhonatan.tec@gmail.com" };
+        var command = new CreateUserCommand { Name = "Jhonatan", Email = "jhonatan.tec@gmail.com", CPF = "111.222.333.44", Senha = "Jhonatan@1020" };
 
         // Act
         var result = await _createHandler.Handle(command, CancellationToken.None);
@@ -43,20 +43,18 @@ public class UserCommandHandlerTests
     [Fact]
     public async Task Handle_UpdateUserCommand_ShouldUpdateUser()
     {
-        // Arrange
-        var createCommand = new CreateUserCommand { Name = "Jhonatan", Email = "jhonatan.tec@gmail.com" };
+        var createCommand = new CreateUserCommand { Name = "Jhonatan", Email = "jhonatan.tec@gmail.com", CPF = "111.222.333.44", Senha = "Jhonatan@1020" };
         var createdUser = await _createHandler.Handle(createCommand, CancellationToken.None);
 
-        var updateCommand = new UpdateUserCommand { UserId = createdUser.Id, Name = "Brayan", Email = "brayan@gmail.com" };
-
-        // Act
+        var updateCommand = new UpdateUserCommand { UserId = createdUser.Id, Name = "Brayan", Email = "brayan@gmail.com", CPF = "222.222.333.44", Senha = "Brayan@1020" };
         var updateResult = await _updateHandler.Handle(updateCommand, CancellationToken.None);
 
-        // Assert
         Assert.True(updateResult);
         var updatedUser = await _context.Users.FindAsync(createdUser.Id);
         Assert.NotNull(updatedUser);
         Assert.Equal("Brayan", updatedUser.Name);
         Assert.Equal("brayan@gmail.com", updatedUser.Email);
+        Assert.Equal("222.222.333.44", updatedUser.CPF);
+        Assert.Equal("Brayan@1020", updatedUser.Senha);
     }
 }

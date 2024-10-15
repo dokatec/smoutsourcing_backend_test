@@ -22,6 +22,8 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, bool>
 
         user.Name = request.Name;
         user.Email = request.Email;
+        user.CPF = request.CPF;
+        user.Senha = request.Senha;
 
         await _context.SaveChangesAsync(cancellationToken);
         return true;
