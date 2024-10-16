@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using Backend.Commands;
-using Backend.Commands.LoginCommand;
 using Backend.Queries;
 using Backend.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Controllers
 {
@@ -15,14 +13,14 @@ namespace Backend.Controllers
         private readonly IMediator _mediator;
         private readonly UserDbContext _context;
 
-        private readonly LoginDbContext _loginContext;
 
 
-        public UserController(IMediator mediator, UserDbContext context, LoginDbContext loginContext)
+
+        public UserController(IMediator mediator, UserDbContext context)
         {
             _mediator = mediator;
             _context = context;
-            _loginContext = loginContext;
+
         }
 
         [HttpPost]
@@ -83,56 +81,6 @@ namespace Backend.Controllers
 
             return Ok("Cadastro do usuario apagado!");
         }
-
-
-
-        [HttpPost("register")]
-        public async Task<IActionResult> CreateUserLogin([FromBody] LoginCommand command)
-        {
-            if (command == null)
-            {
-                return BadRequest("LoginCommand cannot be null");
-            }
-
-            var loginUser = await _mediator.Send(command);
-            if (loginUser == null)
-            {
-                return NotFound("User not found");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            else
-            {
-
-                return Ok(new { loginUser.Id, loginUser.Name, loginUser.CPF, loginUser.Email, loginUser.Senha });
-            }
-
-
-        }
-
-
-
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginCommand command)
-        {
-            if (command == null)
-            {
-                return BadRequest("Invalid login request");
-            }
-
-            var loginUser = await _mediator.Send(command);
-
-            if (loginUser == null)
-            {
-                return Unauthorized("Invalid login attempt");
-            }
-
-            return Ok(new { Token = loginUser.Token });
-        }
-
 
 
     }
