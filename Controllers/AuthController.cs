@@ -1,5 +1,4 @@
 using Backend.Data;
-using Backend.DTOs;
 using Backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -26,18 +25,18 @@ namespace ApiAuthPostgres.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterDto dto)
+        public async Task<IActionResult> Register(Register registerUser)
         {
-            if (await _context.AuthUsers.AnyAsync(u => u.Username == dto.Username))
+            if (await _context.AuthUsers.AnyAsync(u => u.Email == registerUser.Email))
             {
                 return BadRequest("Username is already taken.");
             }
 
             var user = new AuthUser
             {
-                Username = dto.Username,
-                Email = dto.Email,
-                PasswordHash = HashPassword(dto.Password)
+
+                Email = registerUser.Email,
+                PasswordHash = HashPassword(registerUser.Password)
             };
 
             _context.AuthUsers.Add(user);
@@ -47,11 +46,11 @@ namespace ApiAuthPostgres.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto dto)
+        public async Task<IActionResult> Login(Login loginUser)
         {
-            var user = await _context.AuthUsers.SingleOrDefaultAsync(u => u.Username == dto.Username);
+            var user = await _context.AuthUsers.SingleOrDefaultAsync(u => u.Email == loginUser.Email);
 
-            if (user == null || !VerifyPassword(dto.Password, user.PasswordHash))
+            if (user == null || !VerifyPassword(loginUser.Password, user.PasswordHash))
             {
                 return Unauthorized("Invalid credentials.");
             }
@@ -84,7 +83,6 @@ namespace ApiAuthPostgres.Controllers
 
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Username),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };

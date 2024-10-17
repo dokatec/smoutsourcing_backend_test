@@ -37,10 +37,6 @@ namespace backend.Migrations.AuthDb
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.ToTable("AuthUsers");
